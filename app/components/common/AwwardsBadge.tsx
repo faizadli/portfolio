@@ -17,10 +17,13 @@ const AwwardsBadge = () => {
   const { progress } = useProgress();
 
   useGSAP(() => {
-    if (progress === 100) {
+    if (scrollProgress === 0 && progress === 100) {
       gsap.fromTo(badgeRef.current, { right: -50, opacity: 1 },{ opacity: 1, right: 0, duration: 2, delay: 2.5 });
     }
-  }, [progress]);
+    return () => {
+      gsap.killTweensOf(badgeRef.current);
+    }
+  }, [scrollProgress, progress]);
 
   useEffect(() => {
     if (!badgeRef.current) return;

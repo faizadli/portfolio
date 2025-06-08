@@ -50,4 +50,10 @@ export const PROJECTS: Project[] = [
     subtext: '[Enter a meta joke].',
     url: 'https://github.com/mohitvirli/mohitvirli.github.io',
   },
+  {
+    title: 'Focus Clock',
+    date: 'Jun 2025',
+    subtext: 'Developed a minimalist clock featuring a time-remaining indicator.',
+    url: 'https://github.com/mohitvirli/focus-clock',
+  },
 ];
