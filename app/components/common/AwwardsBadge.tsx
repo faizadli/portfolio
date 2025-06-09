@@ -1,11 +1,10 @@
 'use client';
 
 import { useScrollStore } from '@/app/stores/scrollStore';
-import { useGSAP } from '@gsap/react';
 import { useProgress } from '@react-three/drei';
 import { usePortalStore, useThemeStore } from '@stores';
 import gsap from 'gsap';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
 const AwwardsBadge = () => {
@@ -16,21 +15,41 @@ const AwwardsBadge = () => {
   const color = useThemeStore((state) => state.color);
   const { progress } = useProgress();
 
-  useGSAP(() => {
-    if (scrollProgress === 0 && progress === 100) {
-      gsap.fromTo(badgeRef.current, { right: -50, opacity: 1 },{ opacity: 1, right: 0, duration: 2, delay: 2.5 });
+  const [loaded, setLoaded] = useState(false);
+  const [startAnimation, setStartAnimation] = useState(false);
+
+  useEffect(() => { setLoaded(progress === 100) }, [progress]);
+
+  useEffect(() => {
+    if (loaded) {
+      gsap.to(badgeRef.current, {
+        duration: 2,
+        delay: 2,
+        right: 0,
+        onComplete: () => setStartAnimation(true),
+      });
     }
+  }, [loaded]);
+
+  useEffect(() => {
+    if (isPortalActive) return;
+    if (startAnimation && badgeRef.current) {
+      gsap.to(badgeRef.current, {
+        right: -scrollProgress * 1000,
+        duration: 0,
+        ease: 'power2.out',
+      });
+    }
+
     return () => {
       gsap.killTweensOf(badgeRef.current);
     }
-  }, [scrollProgress, progress]);
+  }, [startAnimation, scrollProgress]);
 
   useEffect(() => {
     if (!badgeRef.current) return;
-
     badgeRef.current.style.scale = isMobile ? '0.7' : '0.9';
-    badgeRef.current.style.right = isPortalActive ? '-100px' : (-scrollProgress * 1000).toString() + 'px';
-  }, [isMobile, isPortalActive, scrollProgress]);
+  }, [isMobile]);
 
   useEffect(() => {
     if (fillRef.current) {
@@ -51,8 +70,7 @@ const AwwardsBadge = () => {
         transform: 'translateY(-50%)',
         transformOrigin: 'right top',
         top: '50%',
-        right: 0,
-        opacity: 0,
+        right: -100,
       }}
     >
       <a href="https://www.awwwards.com/sites/mohit-virlis-portfolio" target="_blank">
