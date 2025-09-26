@@ -1,29 +1,40 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-const AvailableColors = ['#0690d4', '#111'];
+interface Theme {
+  type: string;
+  color: string;
+}
+
+const AvailableThemes: Theme[] = [{
+  type: 'light',
+  color: '#0690d4'
+}, {
+  type: 'dark',
+  color: '#111'
+}];
 
 interface ThemeStore {
-  colors: string[];
-  color: string;
-  nextColor: () => void;
+  themes: Theme[];
+  theme: Theme;
+  nextTheme: () => void;
 }
 
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set, get) => ({
-      colors: [...AvailableColors],
-      color: AvailableColors[0],
-      nextColor: () => {
-        const colors = get().colors;
-        const activeColorIndex = colors.indexOf(get().color);
-        const nextColorIndex = (activeColorIndex + 1) % colors.length;
-        set(() => ({ color: colors[nextColorIndex] }));
+      themes: [...AvailableThemes],
+      theme: AvailableThemes[0],
+      nextTheme: () => {
+        const themes = get().themes;
+        const activeThemeIndex = themes.findIndex(theme => theme.type === get().theme.type);
+        const nextThemeIndex = (activeThemeIndex + 1) % themes.length;
+        set(() => ({ theme: themes[nextThemeIndex] }));
       },
     }),
     {
       name: "theme-storage",
-      partialize: (state) => ({ color: state.color }),
+      partialize: (state) => ({ theme: state.theme }),
     }
   )
 );

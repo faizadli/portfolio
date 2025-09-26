@@ -12,7 +12,7 @@ const AwwardsBadge = () => {
   const fillRef = useRef<SVGGElement>(null);
   const isPortalActive = usePortalStore((state) => !!state.activePortalId);
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
-  const color = useThemeStore((state) => state.color);
+  const color = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
 
   const [loaded, setLoaded] = useState(false);

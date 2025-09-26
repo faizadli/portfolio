@@ -9,10 +9,10 @@ import { isMobile } from "react-device-detect";
 
 const ThemeSwitcher = () => {
   const themeSwitcherRef = useRef<HTMLDivElement>(null);
-  const { nextColor, color } = useThemeStore();
+  const { nextTheme, theme } = useThemeStore();
   const isActive = usePortalStore((state) => state.activePortalId);
   const [positionClass, setPositionClass] = useState<string>('');
-  const toggleTheme = () => nextColor();
+  const toggleTheme = () => nextTheme();
 
   useGSAP(() => {
     gsap.to(themeSwitcherRef.current, {
@@ -30,9 +30,9 @@ const ThemeSwitcher = () => {
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
 
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', color);
+      metaThemeColor.setAttribute('content', theme.color);
     }
-  }, [color]);
+  }, [theme.color]);
 
   return (
     <div className={`fixed ${positionClass}`} ref={themeSwitcherRef} style={{ opacity: 0, zIndex: 2 }}>

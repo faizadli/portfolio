@@ -19,7 +19,7 @@ import ThemeSwitcher from "./ThemeSwitcher";
 const CanvasLoader = (props: { children: React.ReactNode }) => {
   const ref= useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const backgroundColor = useThemeStore((state) => state.color);
+  const backgroundColor = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
   const [canvasStyle, setCanvasStyle] = useState<React.CSSProperties>({
     position: "absolute",
