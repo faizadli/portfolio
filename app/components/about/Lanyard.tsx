@@ -33,7 +33,7 @@ import * as THREE from "three";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-/** No solid scene background — shows the main portfolio canvas through empty pixels (same look in light/dark). */
+/** No solid scene background — shows the main portfolio canvas through empty pixels. */
 function TransparentClear() {
   const { gl, scene } = useThree();
   useLayoutEffect(() => {
