@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:3001": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "prepare": "husky",
@@ -14,8 +15,10 @@
     "@next/third-parties": "^15.3.1",
     "@react-three/drei": "^10.0.3",
     "@react-three/fiber": "^9.0.4",
+    "@react-three/rapier": "^2.2.0",
     "@types/three": "^0.173.0",
     "gsap": "^3.12.7",
+    "meshline": "^3.3.1",
     "next": "15.5.7",
     "react": "^19.0.0",
     "react-device-detect": "^2.2.3",

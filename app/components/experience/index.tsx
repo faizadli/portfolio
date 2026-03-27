@@ -1,5 +1,6 @@
 import { Text, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { SCROLL_EXPERIENCE } from "@constants";
 import { usePortalStore } from "@stores";
 import { useRef } from "react";
 import { isMobile } from "react-device-detect";
@@ -21,8 +22,7 @@ const Experience = () => {
   };
 
   useFrame((sate, delta) => {
-    const d = data.range(0.8, 0.2);
-    const e = data.range(0.7, 0.2);
+    const d = data.range(SCROLL_EXPERIENCE.from, SCROLL_EXPERIENCE.length);
 
     if (groupRef.current && !isActive) {
       groupRef.current.position.y = d > 0 ? -1 : -30;
@@ -34,7 +34,7 @@ const Experience = () => {
         const y =  Math.max(Math.min((1 - d) * (10 - i), 10), 0.5);
         text.position.y = THREE.MathUtils.damp(text.position.y, y, 7, delta);
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        (text as any).fillOpacity = e;
+        (text as any).fillOpacity = d;
       });
     }
   });

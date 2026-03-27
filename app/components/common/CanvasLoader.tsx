@@ -9,6 +9,7 @@ import { isMobile } from "react-device-detect";
 
 import { useThemeStore } from "@stores";
 
+import AboutSection from "../about/AboutSection";
 import AwwardsBadge from "./AwwardsBadge";
 import Preloader from "./Preloader";
 import ProgressLoader from "./ProgressLoader";
@@ -89,6 +90,7 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
           <AdaptiveDpr pixelated/>
         </Canvas>
         <ProgressLoader progress={progress} />
+        <AboutSection />
       </div>
       <AwwardsBadge />
       <ThemeSwitcher />
