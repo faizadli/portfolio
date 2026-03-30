@@ -9,9 +9,16 @@ import GridTile from "./GridTile";
 import Projects from "./projects";
 import Work from "./work";
 
+/** Ease 0–1 scroll progress for softer fade / motion (short scroll band feels less abrupt). */
+function easeExperienceProgress(t: number): number {
+  const x = THREE.MathUtils.clamp(t, 0, 1);
+  return x * x * (3 - 2 * x);
+}
+
 const Experience = () => {
   const titleRef = useRef<THREE.Group>(null);
   const groupRef = useRef<THREE.Group>(null);
+  const smoothProgressRef = useRef(0);
   const data = useScroll();
   const isActive = usePortalStore((state) => !!state.activePortalId);
 
@@ -22,11 +29,19 @@ const Experience = () => {
   };
 
   useFrame((sate, delta) => {
-    const d = data.range(SCROLL_EXPERIENCE.from, SCROLL_EXPERIENCE.length);
+    const raw = data.range(SCROLL_EXPERIENCE.from, SCROLL_EXPERIENCE.length);
+    const target = easeExperienceProgress(raw);
+    smoothProgressRef.current = THREE.MathUtils.damp(
+      smoothProgressRef.current,
+      target,
+      5,
+      delta,
+    );
+    const d = smoothProgressRef.current;
 
     if (groupRef.current && !isActive) {
-      groupRef.current.position.y = d > 0 ? -1 : -30;
-      groupRef.current.visible = d > 0;
+      groupRef.current.position.y = THREE.MathUtils.lerp(-30, -1, d);
+      groupRef.current.visible = d > 0.002;
     }
 
     if (titleRef.current) {
