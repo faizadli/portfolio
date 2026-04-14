@@ -35,7 +35,7 @@ const Hero = () => {
 
   return (
     <>
-      <Text position={[0, 2, -10]} {...fontProps} ref={titleRef}>Hi, I am Mochammad Faiz Adli.</Text>
+      <Text position={[0, 2, -10]} {...fontProps} ref={titleRef}>Hi, I am Faiz Adli.</Text>
       <StarsContainer />
       <CloudContainer/>
       <group position={[0, -25, 5.69]}>
