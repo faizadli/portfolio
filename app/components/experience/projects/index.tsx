@@ -20,8 +20,11 @@ const Projects = () => {
     if (isActive) {
       if (isMobile) {
         gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+        gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
       } else {
-        gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
+        // Keep desktop framing deterministic when entering via deep-link return.
+        gsap.to(camera.position, { z: 11.5, y: -39, x: 2, duration: 1 });
+        gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
       }
     }
   }, [isActive]);

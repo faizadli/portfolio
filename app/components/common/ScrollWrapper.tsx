@@ -3,6 +3,7 @@
 import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { isMobile } from "react-device-detect";
+import { useEffect } from "react";
 import * as THREE from "three";
 
 import { usePortalStore, useScrollStore } from "@stores";
@@ -11,7 +12,26 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) 
   const { camera } = useThree();
   const data = useScroll();
   const isActive = usePortalStore((state) => !!state.activePortalId);
+  const setActivePortal = usePortalStore((state) => state.setActivePortal);
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("open") !== "projects") return;
+
+    const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+    // Jump close to the experience zone first, then enter projects portal.
+    data.el.scrollTop = maxScrollTop * 0.985;
+
+    const openTimer = window.setTimeout(() => {
+      setActivePortal("projects");
+      window.history.replaceState(window.history.state, "", "/");
+    }, 260);
+
+    return () => {
+      window.clearTimeout(openTimer);
+    };
+  }, [data, setActivePortal]);
 
   useFrame((state, delta) => {
     if (data) {

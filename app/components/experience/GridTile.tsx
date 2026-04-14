@@ -70,31 +70,36 @@ const GridTile = (props: GridTileProps) => {
     }
   };
 
-  const portalInto = (e: React.MouseEvent) => {
-    if (isActive || activePortalId) return;
-    e.stopPropagation();
-    setActivePortal(id);
-    document.body.style.cursor = 'auto';
+  const ensureCloseControl = () => {
+    if (document.querySelector('.close')) return;
     const div = document.createElement('div');
-
     div.className = 'fixed close';
     div.style.transform = 'rotateX(90deg)';
     div.onclick = () => exitPortal(true);
+    document.body.appendChild(div);
 
-    if (!document.querySelector('.close')) {
-      document.body.appendChild(div);
-
-      gsap.fromTo(div, {
+    gsap.fromTo(
+      div,
+      {
         scale: 0,
         rotate: '-180deg',
-      },{
+      },
+      {
         opacity: 1,
         zIndex: 10,
         transform: 'rotateX(0deg)',
         scale: 1,
         duration: 1,
-      })
-    }
+      },
+    );
+  };
+
+  const portalInto = (e: React.MouseEvent) => {
+    if (isActive || activePortalId) return;
+    e.stopPropagation();
+    setActivePortal(id);
+    document.body.style.cursor = 'auto';
+    ensureCloseControl();
     document.body.addEventListener('keydown', handleEscape);
     gsap.to(portalRef.current, {
       blend: 1,
@@ -102,9 +107,34 @@ const GridTile = (props: GridTileProps) => {
     });
   };
 
+  useEffect(() => {
+    if (!isActive) return;
+    // Keep portal visuals in sync when activated programmatically (e.g. deep-link return).
+    ensureCloseControl();
+    document.body.removeEventListener('keydown', handleEscape);
+    document.body.addEventListener('keydown', handleEscape);
+    gsap.to(portalRef.current, {
+      blend: 1,
+      duration: 0.5,
+    });
+  }, [isActive]);
+
   const exitPortal = (force = false) => {
     if (!force && !activePortalId) return;
     setActivePortal(null)
+
+    if (id === "projects") {
+      const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+      const targetScrollTop = maxScrollTop;
+      // Keep users at the very end of the experience zone after closing side-project portal.
+      data.el.scrollTop = targetScrollTop;
+      window.setTimeout(() => {
+        data.el.scrollTop = targetScrollTop;
+      }, 80);
+      window.setTimeout(() => {
+        data.el.scrollTop = targetScrollTop;
+      }, 200);
+    }
 
     gsap.to(camera.position, {
       x: 0,
