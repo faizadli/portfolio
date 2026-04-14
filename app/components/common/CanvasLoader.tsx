@@ -10,7 +10,6 @@ import { isMobile } from "react-device-detect";
 import { useThemeStore } from "@stores";
 
 import AboutSection from "../about/AboutSection";
-import AwwardsBadge from "./AwwardsBadge";
 import Preloader from "./Preloader";
 import ProgressLoader from "./ProgressLoader";
 import { ScrollHint } from "./ScrollHint";
@@ -91,7 +90,6 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
         <ProgressLoader progress={progress} />
         <AboutSection />
       </div>
-      <AwwardsBadge />
       <ScrollHint />
     </div>
   );
