@@ -62,8 +62,11 @@ export default function Lanyard({
   return (
     <div className="relative z-0 isolate h-full w-full min-h-0 min-w-0 bg-transparent">
       <Canvas
-        className="!absolute inset-0 block h-full w-full touch-none"
-        style={{ background: "transparent" }}
+        className="!absolute inset-0 block h-full w-full"
+        style={{
+          background: "transparent",
+          pointerEvents: "none",
+        }}
         camera={{ position, fov, near: 0.1, far: 500 }}
         onCreated={({ gl }) => {
           gl.outputColorSpace = THREE.SRGBColorSpace;

@@ -42,7 +42,7 @@ export default function AboutSection() {
 
   return (
     <section
-      className="pointer-events-none fixed inset-0 z-[5] flex items-center justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-24 xl:px-32"
+      className="pointer-events-none [&_*]:pointer-events-none fixed inset-0 z-[5] flex items-center justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-24 xl:px-32"
       style={{ opacity }}
       aria-hidden={opacity < 0.1}
     >
