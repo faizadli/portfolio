@@ -15,6 +15,9 @@ function easeExperienceProgress(t: number): number {
   return x * x * (3 - 2 * x);
 }
 
+/** Extra downward offset so title + tiles sit slightly lower (less cramped to the top). */
+const EXPERIENCE_VERTICAL_NUDGE = 0.55;
+
 const Experience = () => {
   const titleRef = useRef<THREE.Group>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -40,7 +43,11 @@ const Experience = () => {
     const d = smoothProgressRef.current;
 
     if (groupRef.current && !isActive) {
-      groupRef.current.position.y = THREE.MathUtils.lerp(-30, -1, d);
+      groupRef.current.position.y = THREE.MathUtils.lerp(
+        -30,
+        -1 - EXPERIENCE_VERTICAL_NUDGE,
+        d,
+      );
       groupRef.current.visible = d > 0.002;
     }
 
@@ -59,7 +66,9 @@ const Experience = () => {
     return title.split('').map((char, i) => {
       const diff = isMobile ? 0.4 : 0.8;
       return (
-        <Text key={i} {...fontProps} position={[i * diff, 2, 1]}>{char}</Text>
+        <Text key={i} {...fontProps} position={[i * diff, 2, 1]}>
+          {char}
+        </Text>
       );
     });
   };
@@ -71,11 +80,18 @@ const Experience = () => {
         <shadowMaterial opacity={0.1} />
       </mesh> */}
       <group rotation={[0, 0, Math.PI / 2]}>
-        <group ref={titleRef} position={[isMobile ? -1.8 : -3.6, 2, -2]}>
+        <group
+          ref={titleRef}
+          position={[
+            isMobile ? -1.8 : -3.6,
+            2 - EXPERIENCE_VERTICAL_NUDGE,
+            -2,
+          ]}
+        >
           {getTitle()}
         </group>
 
-        <group position={[0, -1, 0]} ref={groupRef}>
+        <group position={[0, -1 - EXPERIENCE_VERTICAL_NUDGE, 0]} ref={groupRef}>
           <GridTile title='WORK AND EDUCATION'
             id="work"
             color='#b9c6d6'
