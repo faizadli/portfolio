@@ -134,10 +134,33 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
     [stacked, sideAnchor, diff],
   );
 
-  const yearFontSize =
-    stacked && cssWidth <= 380 ? 0.24 : cssWidth <= 420 ? 0.26 : 0.3;
-  const titleFontSize = cssWidth <= 420 ? 0.48 : cssWidth <= 700 ? 0.54 : 0.6;
-  const subtitleFontSize = cssWidth <= 480 ? 0.16 : 0.2;
+  const yearFontSize = stacked
+    ? cssWidth <= 380
+      ? 0.2
+      : cssWidth <= 480
+        ? 0.22
+        : 0.24
+    : cssWidth <= 700
+      ? 0.2
+      : 0.22;
+  const titleFontSize = stacked
+    ? cssWidth <= 380
+      ? 0.32
+      : cssWidth <= 480
+        ? 0.34
+        : 0.36
+    : cssWidth <= 700
+      ? 0.34
+      : cssWidth <= 980
+        ? 0.36
+        : 0.4;
+  const subtitleFontSize = stacked
+    ? cssWidth <= 480
+      ? 0.12
+      : 0.13
+    : cssWidth <= 900
+      ? 0.12
+      : 0.14;
 
   const titleMaxWidth = stacked
     ? cssWidth <= 360
@@ -150,10 +173,10 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
     : cssWidth <= 400
       ? 2.2
       : cssWidth <= 560
-        ? 2.5
-        : cssWidth <= 720
-          ? 2.85
-          : 3;
+        ? 2.3
+        : cssWidth <= 860
+          ? 2.45
+          : 2.65;
 
   const titleProps = useMemo(
     () => ({
@@ -161,17 +184,50 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
       font: "./soria-font.ttf",
       fontSize: titleFontSize,
       maxWidth: titleMaxWidth,
+      lineHeight: 1.05,
     }),
     [textProps, titleFontSize, titleMaxWidth],
   );
+
+  const estimatedTitleLines = useMemo(() => {
+    const charsPerLine = stacked
+      ? cssWidth <= 380
+        ? 14
+        : cssWidth <= 480
+          ? 16
+          : 18
+      : cssWidth <= 900
+        ? 18
+        : 22;
+    return Math.max(1, Math.ceil(point.title.length / charsPerLine));
+  }, [stacked, cssWidth, point.title]);
+
+  const subtitleMaxWidth = stacked ? titleMaxWidth - 0.2 : titleMaxWidth;
+
+  const estimatedSubtitleLines = useMemo(() => {
+    const charsPerLine = stacked
+      ? cssWidth <= 380
+        ? 24
+        : cssWidth <= 480
+          ? 28
+          : 30
+      : cssWidth <= 900
+        ? 28
+        : 34;
+    return Math.max(1, Math.ceil((point.subtitle ?? "").length / charsPerLine));
+  }, [stacked, cssWidth, point.subtitle]);
 
   const backdropSize = useMemo(() => {
     if (!stacked) return [0, 0] as const;
     const w =
       cssWidth <= 360 ? 2.95 : cssWidth <= 400 ? 3.05 : cssWidth <= 480 ? 3.2 : 3.35;
-    const h = cssWidth <= 360 ? 1.75 : 1.9;
+    // Fit-content style height: tighter base + modest growth per wrapped line.
+    const baseH = cssWidth <= 360 ? 1.56 : cssWidth <= 480 ? 1.66 : 1.78;
+    const extraTitleH = (estimatedTitleLines - 1) * 0.23;
+    const extraSubtitleH = (estimatedSubtitleLines - 1) * 0.15;
+    const h = baseH + extraTitleH + extraSubtitleH;
     return [w, h] as const;
-  }, [stacked, cssWidth]);
+  }, [stacked, cssWidth, estimatedTitleLines, estimatedSubtitleLines]);
 
   const cardGeometry = useMemo(() => {
     if (!stacked) return null;
@@ -193,6 +249,14 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
   const cardOpacity = stacked ? 0.42 * eased : 0;
 
   const yearShiftX = stacked ? 0 : -diff / 2;
+  const yearShiftY = stacked ? -0.02 : 0.01;
+  const titleGroupY = stacked ? -0.66 : -0.58;
+  const subtitleBaseGap = stacked ? 0.34 : 0.36;
+  const subtitlePerExtraLine = stacked ? 0.19 : 0.22;
+  const subtitleShiftY =
+    -(subtitleBaseGap + (estimatedTitleLines - 1) * subtitlePerExtraLine) - diff;
+  const cardTopY = 0.42;
+  const cardCenterY = stacked ? cardTopY - backdropSize[1] / 2 : -0.52;
 
   return (
     <group position={point.point} scale={pointScale}>
@@ -210,7 +274,7 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
             {stacked && cardGeometry && (
               <mesh
                 geometry={cardGeometry}
-                position={[0, -0.52, -0.025]}
+                position={[0, cardCenterY, -0.025]}
                 renderOrder={-2}
               >
                 <meshBasicMaterial
@@ -226,12 +290,12 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
             <Text
               {...textProps}
               fontSize={yearFontSize}
-              position={[yearShiftX, 0, 0]}
+              position={[yearShiftX, yearShiftY, 0]}
               maxWidth={stacked ? titleMaxWidth : undefined}
             >
               {point.year}
             </Text>
-            <group position={[0, -0.5, 0]}>
+            <group position={[0, titleGroupY, 0]}>
               <Text
                 {...titleProps}
                 fontSize={titleFontSize}
@@ -243,8 +307,9 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number
               <Text
                 {...textProps}
                 fontSize={subtitleFontSize}
-                position={[0, -0.4 - diff, 0]}
-                maxWidth={titleMaxWidth}
+                lineHeight={1.1}
+                position={[0, subtitleShiftY, 0]}
+                maxWidth={subtitleMaxWidth}
               >
                 {point.subtitle}
               </Text>
