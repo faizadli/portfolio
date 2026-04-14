@@ -14,7 +14,8 @@ export const SCROLL_WINDOW_ANIM_END =
  * {@link SCROLL_WINDOW_ANIM_END}), not during it.
  *
  * Keep a wide band between {@link SCROLL_ABOUT.fadeInEnd} and {@link SCROLL_ABOUT.fadeOutStart}
- * so full-opacity About stays on screen long enough before the next section.
+ * so full-opacity About stays on screen long enough; fade-out span should be wide enough to feel
+ * gradual when scrolling toward Experience.
  *
  * {@link SCROLL_ABOUT.fadeOutEnd} must finish **before** {@link SCROLL_EXPERIENCE.from} so the
  * overlay does not stack on the Experience title/grid.
@@ -22,8 +23,8 @@ export const SCROLL_WINDOW_ANIM_END =
 export const SCROLL_ABOUT = {
   fadeInStart: SCROLL_WINDOW_ANIM_END + 0.005,
   fadeInEnd: 0.84,
-  fadeOutStart: 0.91,
-  fadeOutEnd: 0.945,
+  fadeOutStart: 0.925,
+  fadeOutEnd: 0.965,
 } as const;
 
 const SCROLL_EXPERIENCE_FROM = SCROLL_ABOUT.fadeOutEnd + 0.007;
