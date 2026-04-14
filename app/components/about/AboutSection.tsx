@@ -42,24 +42,23 @@ export default function AboutSection() {
 
   return (
     <section
-      className="pointer-events-none [&_*]:pointer-events-none fixed inset-0 z-[5] flex items-center justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-24 xl:px-32"
+      className="pointer-events-none [&_*]:pointer-events-none fixed inset-0 z-[5] flex items-center justify-center px-4 py-8 sm:px-8 sm:py-12 md:px-16 lg:px-24 xl:px-32"
       style={{ opacity }}
       aria-hidden={opacity < 0.1}
     >
-      <div className="flex w-full max-w-6xl flex-col items-center justify-center gap-10 md:flex-row md:items-center md:gap-14 lg:gap-20">
+      <div className="flex w-full max-w-6xl flex-col items-center justify-center gap-8 sm:gap-10 md:flex-row md:items-center md:gap-14 lg:gap-20">
         <div className="w-full max-w-md shrink-0 text-center text-white drop-shadow md:w-auto md:text-left">
-          <h2 className="font-serif text-4xl tracking-wide md:text-5xl">About me</h2>
-          <p className="mt-4 font-sans text-sm leading-relaxed text-white/90 md:text-base">
+          <h2 className="font-serif text-3xl tracking-wide sm:text-4xl md:text-5xl">About me</h2>
+          <p className="mt-3 font-sans text-xs leading-relaxed text-white/90 sm:mt-4 sm:text-sm md:text-base">
             Frontend engineer by profession, creative at heart. I craft interactive web
             experiences with attention to motion, performance, and detail.
           </p>
         </div>
 
         <div
-          className="relative w-full max-w-[min(100%,520px)] shrink-0 overflow-visible bg-transparent md:max-w-[min(100%,540px)]"
+          className="relative w-full max-w-[min(100%,520px)] shrink-0 overflow-visible bg-transparent min-h-[220px] sm:min-h-[300px] md:min-h-[400px] md:max-w-[min(100%,540px)]"
           style={{
-            height: "min(62vh, 600px)",
-            minHeight: 400,
+            height: "min(58vh, min(520px, 100dvh - 12rem))",
           }}
         >
           <Lanyard />
