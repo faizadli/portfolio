@@ -78,7 +78,7 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[] })
 
     if (!isActive) {
       // Snap frames only fix drei `offset` / `scroll.current` vs DOM — keep camera on damp + lerp
-      // so exit matches “buka side project lalu X” (no long instant snap segment).
+      // so exit matches “open projects portal then X” (no long instant snap segment).
       camera.rotation.x = THREE.MathUtils.damp(camera.rotation.x, -0.5 * Math.PI * a, 5, delta);
       camera.position.y = THREE.MathUtils.damp(camera.position.y, -37 * b, 7, delta);
       camera.position.z = THREE.MathUtils.damp(camera.position.z, 5 + 10 * d, 7, delta);

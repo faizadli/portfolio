@@ -105,7 +105,7 @@ const Experience = () => {
             <Work/>
           </GridTile>
           <GridTile
-            title="SIDE PROJECTS"
+            title="PROJECTS"
             id="projects"
             color="#bdd1e3"
             textAlign="right"

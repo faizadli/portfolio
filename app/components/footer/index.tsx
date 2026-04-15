@@ -12,7 +12,23 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
   const [hovered, setHovered] = useState(false);
   const onPointerOver = () => setHovered(true);
   const onPointerOut = () => setHovered(false);
-  const onClick = () => window.open(link.url, '_blank');
+  const onClick = () => {
+    const isPdf = /\.pdf(\?|#|$)/i.test(link.url);
+    const isResume = link.name.toLowerCase() === "resume";
+
+    if (isPdf || isResume) {
+      const anchor = document.createElement("a");
+      anchor.href = link.url;
+      anchor.download = link.url.split("/").pop() || "Resume.pdf";
+      anchor.rel = "noopener noreferrer";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      return;
+    }
+
+    window.open(link.url, "_blank", "noopener,noreferrer");
+  };
   const onPointerMove = (e: MouseEvent) => {
     if (isMobile) return;
     const hoverDiv = document.getElementById(`footer-link-${link.name}`);
