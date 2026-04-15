@@ -123,29 +123,28 @@ const GridTile = (props: GridTileProps) => {
     if (!force && !activePortalId) return;
     setActivePortal(null)
 
+    // Match exit feel after "direct" portal open: clear Projects portal drift (pointer yaw / z)
+    // so ScrollWrapper + scroll offset drive the camera the same way in every flow.
     if (id === "projects") {
-      const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
-      const targetScrollTop = maxScrollTop;
-      // Keep users at the very end of the experience zone after closing side-project portal.
-      data.el.scrollTop = targetScrollTop;
-      window.setTimeout(() => {
-        data.el.scrollTop = targetScrollTop;
-      }, 80);
-      window.setTimeout(() => {
-        data.el.scrollTop = targetScrollTop;
-      }, 200);
+      gsap.killTweensOf(camera.position);
+      gsap.killTweensOf(camera.rotation);
+      camera.rotation.y = 0;
+      camera.rotation.z = 0;
+      camera.position.x = 0;
+      // ScrollWrapper + snap scroll sync handle position/rotation (no 1s GSAP fight with damped scroll).
+    } else {
+      gsap.to(camera.position, {
+        x: 0,
+        duration: 1,
+      });
+
+      gsap.to(camera.rotation, {
+        x: -Math.PI / 2,
+        y: 0,
+        z: 0,
+        duration: 1,
+      });
     }
-
-    gsap.to(camera.position, {
-      x: 0,
-      duration: 1,
-    });
-
-    gsap.to(camera.rotation, {
-      x: -Math.PI / 2,
-      y: 0,
-      duration: 1,
-    });
 
     gsap.to(portalRef.current, {
       blend: 0,

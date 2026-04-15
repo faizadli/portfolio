@@ -1,10 +1,10 @@
 import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
-import { usePortalStore } from "@stores";
+import { usePortalStore, useScrollStore } from "@stores";
 import { Wanderer } from "../../models/Wanderer";
 import ProjectsCarousel from "./ProjectsCarousel";
 import { TouchPanControls } from "./TouchPanControls";
@@ -13,21 +13,33 @@ const Projects = () => {
   const { camera } = useThree();
   const isActive = usePortalStore((state) => state.activePortalId === "projects");
   const data = useScroll();
+  const wasPortalActiveRef = useRef(false);
 
   useEffect(() => {
-    // Hide scrollbar when active.
-    data.el.style.overflow = isActive ? 'hidden' : 'auto';
-    if (isActive) {
-      if (isMobile) {
-        gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
-        gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
-      } else {
-        // Keep desktop framing deterministic when entering via deep-link return.
-        gsap.to(camera.position, { z: 11.5, y: -39, x: 2, duration: 1 });
-        gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
-      }
+    if (!isActive) return;
+    data.el.style.overflow = "hidden";
+    wasPortalActiveRef.current = true;
+    if (isMobile) {
+      gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+      gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
+    } else {
+      gsap.to(camera.position, { z: 11.5, y: -39, x: 2, duration: 1 });
+      gsap.to(camera.rotation, { x: -Math.PI / 2, y: 0, z: 0, duration: 0.8 });
     }
-  }, [isActive]);
+  }, [isActive, data.el]);
+
+  // Run scroll restore in useLayoutEffect so scrollTop + drei sync happen before paint / next rAF.
+  useLayoutEffect(() => {
+    if (isActive) return;
+    if (!wasPortalActiveRef.current) return;
+    wasPortalActiveRef.current = false;
+    data.el.style.overflow = "auto";
+    const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+    if (maxScrollTop <= 0) return;
+    data.el.scrollTop = maxScrollTop;
+    data.el.scrollTo?.({ top: maxScrollTop, behavior: "instant" });
+    useScrollStore.getState().requestSnapCameraToScroll(40);
+  }, [isActive, data.el]);
 
   useFrame((state, delta) => {
     if (isActive) {

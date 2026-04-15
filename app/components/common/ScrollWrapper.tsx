@@ -4,13 +4,19 @@ import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { isMobile } from "react-device-detect";
 import { useEffect } from "react";
+import type { MutableRefObject } from "react";
 import * as THREE from "three";
 
 import { usePortalStore, useScrollStore } from "@stores";
 
-const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) => {
+/** Drei's internal scroll state — `scroll.current` is the damp target fed by DOM `onScroll`. */
+type ScrollWithTarget = ReturnType<typeof useScroll> & {
+  scroll: MutableRefObject<number>;
+};
+
+const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[] }) => {
   const { camera } = useThree();
-  const data = useScroll();
+  const data = useScroll() as ScrollWithTarget;
   const isActive = usePortalStore((state) => !!state.activePortalId);
   const setActivePortal = usePortalStore((state) => state.setActivePortal);
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress);
@@ -19,50 +25,91 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) 
     const params = new URLSearchParams(window.location.search);
     if (params.get("open") !== "projects") return;
 
-    const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
-    // Jump close to the experience zone first, then enter projects portal.
-    data.el.scrollTop = maxScrollTop * 0.985;
-
-    const openTimer = window.setTimeout(() => {
-      setActivePortal("projects");
-      window.history.replaceState(window.history.state, "", "/");
-    }, 260);
+    let cancelled = false;
+    const runWhenReady = () => {
+      if (cancelled) return;
+      const maxScrollTop = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+      if (maxScrollTop < 1) {
+        requestAnimationFrame(runWhenReady);
+        return;
+      }
+      data.el.scrollTop = maxScrollTop;
+      const maxST = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+      const ratio = maxST > 0 ? THREE.MathUtils.clamp(data.el.scrollTop / maxST, 0, 1) : 0;
+      data.scroll.current = ratio;
+      data.offset = ratio;
+      useScrollStore.getState().requestSnapCameraToScroll(28);
+      window.setTimeout(() => {
+        if (cancelled) return;
+        setActivePortal("projects");
+        window.history.replaceState(window.history.state, "", "/");
+      }, 120);
+    };
+    queueMicrotask(() => requestAnimationFrame(runWhenReady));
 
     return () => {
-      window.clearTimeout(openTimer);
+      cancelled = true;
     };
   }, [data, setActivePortal]);
 
+  // Priority -1 runs after ScrollControls (0). Sync `offset` + `scroll.current` from DOM before
+  // `data.range()`. If `scroll.current` stays 0 while scrollTop is at the bottom, damp pulls offset
+  // toward Hero even though the scrollbar is at the end.
   useFrame((state, delta) => {
-    if (data) {
-      const a = data.range(0, 0.3);
-      const b = data.range(0.3, 0.5);
-      const d = data.range(0.85, 0.18);
+    if (!data) return;
 
-      if (!isActive) {
+    let snapThisFrame = false;
+    if (!isActive) {
+      const snapLeft = useScrollStore.getState().snapCameraToScrollFrames;
+      snapThisFrame = snapLeft > 0;
+      if (snapThisFrame) {
+        const maxST = Math.max(0, data.el.scrollHeight - data.el.clientHeight);
+        const ratio =
+          maxST > 0 ? THREE.MathUtils.clamp(data.el.scrollTop / maxST, 0, 1) : 0;
+        data.scroll.current = ratio;
+        data.offset = ratio;
+        useScrollStore.setState({ snapCameraToScrollFrames: snapLeft - 1 });
+      }
+    }
+
+    const a = data.range(0, 0.3);
+    const b = data.range(0.3, 0.5);
+    const d = data.range(0.85, 0.18);
+
+    if (!isActive) {
+      if (snapThisFrame) {
+        camera.rotation.x = -0.5 * Math.PI * a;
+        camera.position.y = -37 * b;
+        camera.position.z = 5 + 10 * d;
+        camera.position.x = 0;
+      } else {
         camera.rotation.x = THREE.MathUtils.damp(camera.rotation.x, -0.5 * Math.PI * a, 5, delta);
         camera.position.y = THREE.MathUtils.damp(camera.position.y, -37 * b, 7, delta);
         camera.position.z = THREE.MathUtils.damp(camera.position.z, 5 + 10 * d, 7, delta);
-
-        setScrollProgress(data.range(0, 1));
       }
 
-      // Move camera slightly on mouse movement.
-      if (!isMobile && !isActive) {
-        camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, -(state.pointer.x * Math.PI) / 90, 0.05);
+      setScrollProgress(data.range(0, 1));
+    }
+
+    if (!isMobile && !isActive) {
+      const yawTarget = -(state.pointer.x * Math.PI) / 90;
+      if (snapThisFrame) {
+        camera.rotation.y = yawTarget;
+      } else {
+        camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, yawTarget, 0.05);
       }
     }
-  });
+  }, -1);
 
   const children = Array.isArray(props.children) ? props.children : [props.children];
 
-  return <>
-    {children.map((child, index) => {
-      return <group key={index}>
-        {child}
-      </group>
-    })}
-  </>
-}
+  return (
+    <>
+      {children.map((child, index) => (
+        <group key={index}>{child}</group>
+      ))}
+    </>
+  );
+};
 
 export default ScrollWrapper;
