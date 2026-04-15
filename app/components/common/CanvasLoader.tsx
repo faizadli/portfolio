@@ -7,6 +7,8 @@ import gsap from "gsap";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 
+import { CANVAS_NOISE_OVERLAY_STYLE } from "@constants";
+
 import { useThemeStore } from "@stores";
 
 import AboutSection from "../about/AboutSection";
@@ -55,16 +57,9 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
     gsap.to(canvasRef.current, {
       backgroundColor: backgroundColor,
       duration: 1,
-      ...noiseOverlayStyle,
+      ...CANVAS_NOISE_OVERLAY_STYLE,
     });
   }, [backgroundColor]);
-
-  const noiseOverlayStyle = {
-    backgroundBlendMode: "soft-light",
-    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E\")",
-    backgroundRepeat: "repeat",
-    backgroundSize: "100px",
-  };
 
   return (
     <div className="h-[100dvh] wrapper relative">
