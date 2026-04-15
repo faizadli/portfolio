@@ -17,6 +17,20 @@ interface ProjectTileProps {
   onClick: () => void;
 }
 
+function getTitleFontSize(title: string): number {
+  const normalized = title.trim();
+  const length = normalized.length;
+  const longestWord = normalized
+    .split(/\s+/)
+    .reduce((max, word) => Math.max(max, word.length), 0);
+
+  if (length >= 78 || longestWord >= 20) return 0.28;
+  if (length >= 64 || longestWord >= 16) return 0.34;
+  if (length >= 52) return 0.42;
+  if (length >= 40) return 0.52;
+  return 0.64;
+}
+
 const ProjectTile = ({ project, index, position, rotation, activeId, onClick }: ProjectTileProps) => {
   const projectRef = useRef<THREE.Group>(null);
   const hoverAnimRef = useRef<gsap.core.Timeline | null>(null);
@@ -34,6 +48,7 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick }: 
     anchorX: "left",
     anchorY: "top",
   }), []);
+  const titleFontSize = useMemo(() => getTitleFontSize(project.title), [project.title]);
 
   useEffect(() => {
     if (!projectRef.current) return;
@@ -110,8 +125,9 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick }: 
           position={[-1.9, -0.8, 0.101]}
           anchorX="left"
           anchorY="bottom"
-          maxWidth={4}
-          fontSize={0.8}>
+          maxWidth={3.55}
+          lineHeight={0.9}
+          fontSize={titleFontSize}>
           {project.title}
         </Text>
         <group position={[-1.25, 1.4, 0.01]}>

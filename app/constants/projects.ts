@@ -1,59 +1,199 @@
 import { Project } from "../types";
 
-// TODO: Move this to API
 export const PROJECTS: Project[] = [
   {
-    title: 'Angular Gulp Seed',
-    date: 'Aug 2016',
-    subtext: 'A basic starter project to initialize project using AngularJS and Gulp. It follows MVC architecture and uses standard app structure.',
-    url: 'https://github.com/mohitvirli/angular-gulp-seed',
+    kind: "project",
+    title: "Adikara - Job Portal Platform for Paser, East Kalimantan",
+    date: "Aug 2026",
+    subtext:
+      "Specialized local job portal that connects job seekers and companies in Paser, with search and location-based job filters.",
+    image: "/assets/projects/adikara.png",
+    url: "https://adikara.vercel.app/",
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Express.js", "MySQL"],
   },
   {
-    title: 'State.js',
-    date: 'Jul 2020',
-    subtext: 'A lightweight library for turning JS objects into observables, providing a convenient API for state management and manipulation.',
-    url: 'https://github.com/mohitvirli/state.js',
+    kind: "project",
+    title: "Recipe Website - Culinary Recipe Collection Platform",
+    date: "Jul 2026",
+    subtext:
+      "Recipe discovery website with search, meal category filters, and structured recipe cards for easier home cooking.",
+    image: "/assets/projects/recipe.png",
+    url: "https://github.com/faizadli/food-recipe-website",
+    tags: ["html", "css", "javascript", "jquery", "bootstrap"],
   },
   {
-    title: 'change-host',
-    date: 'Jul 2020',
-    subtext: 'A CLI tool to manage /etc/hosts entries for local development. It enables quick and easy mapping of IPs to URLs with a single command.',
-    url: 'https://github.com/mohitvirli/change-host',
+    kind: "project",
+    title: "SmartERP - Next-Generation Enterprise Resource Planning System",
+    date: "Jun 2026",
+    subtext:
+      "Comprehensive ERP platform for analytics, inventory, team operations, and time tracking in one integrated business workflow.",
+    image: "/assets/projects/kodein-erp.png",
+    url: "#",
+    tags: ["Next.js", "TypeScript", "Springboot", "PostgreSQL", "Shadcn"],
   },
   {
-    title: 'Vaccine Slots Discord Bot',
-    date: 'May 2021',
-    subtext: 'A Discord Bot that sends alerts for COVID-19 vaccine availability based on PIN/district using public APIs.',
-    url: 'https://github.com/mohitvirli/vaccine-slots-discord-bot',
+    kind: "project",
+    title: "UKM Teater UI - Visual Design Projects",
+    date: "May 2026",
+    subtext:
+      "Design package for theater promotion including performance posters, booklet layout, and recruitment banner assets.",
+    image: "/assets/projects/theater-ui.png",
+    url: "#",
+    tags: ["Graphic Design", "Banner", "Booklet", "Poster"],
   },
   {
-    title: 'Chat bot',
-    date: 'Aug 2024',
-    subtext: 'A streaming chatbot that allows users to switch between different LLMs with custom API keys.',
-    url: 'https://github.com/mohitvirli/chat-bot-vercel',
+    kind: "project",
+    title: "My Medic Health App - UI/UX Redesign Project",
+    date: "Apr 2026",
+    subtext:
+      "UI/UX redesign concept for a healthcare app to improve service discovery, consultation flow, and overall usability.",
+    image: "/assets/projects/my-medic.png",
+    url: "#",
+    tags: ["UI/UX Design", "Health App", "Redesign", "Figma"],
   },
   {
-    title: 'Word Game',
-    date: 'Oct 2024',
-    subtext: 'This word game app offers single and multiplayer modes where players take turns forming words, each starting with the last letter of the previous word.',
-    url: 'https://github.com/mohitvirli/word-game',
+    kind: "certificate",
+    title: "Belajar Membuat Front-End Web untuk Pemula",
+    issuer: "Dicoding",
+    date: "Dec 2022",
+    subtext:
+      "Competency certificate for front-end fundamentals, covering core structure, styling, and interactive web behavior.",
+    image: "/assets/certificates/Belajar%20Membuat%20Front-End%20Web%20untuk%20Pemula%20-%20Dicoding.png",
+    url: "#",
   },
   {
-    title: 'DJ Gig',
-    date: 'Mar 2025',
-    subtext: 'Hosted a Sundowner event which was recorded and is out on YouTube. Furthermore, I performed a UKG/140 DJ set at a local club.',
-    url: 'https://www.youtube.com/watch?v=oauQSEySkoQ',
+    kind: "certificate",
+    title: "Belajar Dasar Pemrograman Web",
+    issuer: "Dicoding",
+    date: "Jul 2022",
+    subtext:
+      "Competency certificate focused on web programming basics and practical implementation for beginner developers.",
+    image: "/assets/certificates/Belajar%20Dasar%20Pemrograman%20Web%20-%20Dicoding.png",
+    url: "#",
   },
   {
-    title: 'Portfolio',
-    date: 'Apr 2025',
-    subtext: '[Enter a meta joke].',
-    url: 'https://github.com/mohitvirli/mohitvirli.github.io',
+    kind: "certificate",
+    title: "Cloud Practitioner Essentials (Belajar Dasar AWS Cloud)",
+    issuer: "Dicoding",
+    date: "Nov 2021",
+    subtext:
+      "Foundational cloud certificate covering AWS core concepts, cloud computing basics, and platform services.",
+    image:
+      "/assets/certificates/Cloud%20Practitioner%20Essentials%20%28Belajar%20Dasar%20AWS%20Clous%29%20-%20Dicoding.png",
+    url: "#",
   },
   {
-    title: 'Focus Clock',
-    date: 'Jun 2025',
-    subtext: 'Developed a minimalist clock featuring a time-remaining indicator.',
-    url: 'https://github.com/mohitvirli/focus-clock',
+    kind: "certificate",
+    title: "Architecting on AWS (Membangun Arsitektur Cloud di AWS)",
+    issuer: "Dicoding",
+    date: "May 2021",
+    subtext:
+      "Competency certificate in AWS cloud architecture design and implementation for scalable applications.",
+    image:
+      "/assets/certificates/Architecting%20on%20AWS%20%28Membangun%20Arsitektur%20Cloud%20di%20AWS%29%20-%20Dicoding.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Belajar Dasar Pemrograman JavaScript",
+    issuer: "Dicoding",
+    date: "Oct 2021",
+    subtext:
+      "Competency certificate for JavaScript programming fundamentals and practical usage in web development.",
+    image:
+      "/assets/certificates/Belajar%20Dasar%20Pemrograman%20JavaScript%20-%20Dicoding.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Belajar Membuat Aplikasi Back-End untuk Pemula",
+    issuer: "Dicoding",
+    date: "Sep 2021",
+    subtext:
+      "Competency certificate for beginner-level back-end application development concepts and implementation.",
+    image:
+      "/assets/certificates/Belajar%20Membuat%20Aplikasi%20Back-End%20untuk%20Pemula%20-%20Dicoding.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Fundamental SQL Using SELECT Statement",
+    issuer: "DQLab",
+    date: "Aug 2021",
+    subtext:
+      "Certificate of completion for SQL basics with a focus on SELECT statements and core query patterns.",
+    image:
+      "/assets/certificates/Fundamental%20SQL%20Using%20SELECT%20Statement%20-%20DQLab.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Kursus SQL",
+    issuer: "Progate",
+    date: "Jun 2021",
+    subtext:
+      "Certificate of completion for foundational SQL and database manipulation fundamentals.",
+    image: "/assets/certificates/Kursus%20SQL%20-%20Progate.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Kursus Command Line",
+    issuer: "Progate",
+    date: "Dec 2020",
+    subtext:
+      "Certificate of completion for UNIX command-line essentials and basic shell operations.",
+    image: "/assets/certificates/Kursus%20Command%20Line%20-%20Progate.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Kursus HTML & CSS",
+    issuer: "Progate",
+    date: "Nov 2020",
+    subtext:
+      "Certificate of completion for HTML and CSS fundamentals in web page structure and styling.",
+    image: "/assets/certificates/Kursus%20HTML%20%26%20CSS%20-%20Progate.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "Kursus JavaScript",
+    issuer: "Progate",
+    date: "Oct 2020",
+    subtext:
+      "Certificate of completion for JavaScript programming fundamentals for interactive web applications.",
+    image: "/assets/certificates/Kursus%20JavaScript%20-%20Progate.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "CSS Fundamentals course",
+    issuer: "Sololearn",
+    date: "Sep 2020",
+    subtext:
+      "Certificate of completion for CSS fundamentals and modern web styling techniques.",
+    image: "/assets/certificates/CSS%20Fundamentals%20course%20-%20Sololearn.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "HTML Fundamentals course",
+    issuer: "Sololearn",
+    date: "Aug 2020",
+    subtext:
+      "Certificate of completion for HTML fundamentals and semantic page structure.",
+    image: "/assets/certificates/HTML%20Fundamentals%20course%20-%20Sololearn.png",
+    url: "#",
+  },
+  {
+    kind: "certificate",
+    title: "JavaScript Tutorial course",
+    issuer: "Sololearn",
+    date: "Jul 2020",
+    subtext:
+      "Certificate of completion for JavaScript basics and practical coding exercises.",
+    url: "#",
+    image: "/assets/certificates/JavaScript%20Tutorial%20course%20-%20Sololearn.png",
   },
 ];

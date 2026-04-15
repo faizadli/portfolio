@@ -67,7 +67,7 @@ const ViewAllProjectsOverlay = () => {
               <span className="font-[var(--font-soria)] text-xl leading-tight tracking-tight text-white sm:text-2xl">
                 View all
                 <span className="mt-0.5 block font-sans text-xs font-normal tracking-normal text-white/70">
-                  Full projects page
+                  Full projects & certificates page
                 </span>
               </span>
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition duration-300 group-hover:border-white/40 group-hover:bg-white/20 group-hover:text-white">

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { PROJECTS } from "@constants";
 
 import type { Project } from "@/app/types/projects";
@@ -139,26 +140,28 @@ function hashHue(str: string): number {
   return Math.abs(h) % 360;
 }
 
-function categoryBadge(kind: ReturnType<typeof linkKind>): { label: string; className: string } {
-  if (kind === "github") {
-    return { label: "Repository", className: "bg-violet-100 text-violet-700 ring-1 ring-violet-200/80" };
-  }
-  if (kind === "youtube") {
-    return { label: "Video", className: "bg-red-100 text-red-700 ring-1 ring-red-200/80" };
+function categoryBadge(kind: Project["kind"]): { label: string; className: string } {
+  if (kind === "certificate") {
+    return {
+      label: "Certificate",
+      className: "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200/90",
+    };
   }
   return { label: "Project", className: "bg-sky-100 text-sky-800 ring-1 ring-sky-200/80" };
 }
 
-const PROJECTS_PAGE_SIZE = 8;
+const PROJECTS_PAGE_SIZE = 10;
 
 function ProjectCardThumbnail({
   title,
   primaryUrl,
   displayIndex,
+  image,
 }: {
   title: string;
   primaryUrl: string | undefined;
   displayIndex: number;
+  image?: string;
 }) {
   const hue = hashHue(title);
   const hue2 = (hue + 48) % 360;
@@ -167,13 +170,24 @@ function ProjectCardThumbnail({
 
   return (
     <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-neutral-200">
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(125deg, hsl(${hue}, 58%, 38%) 0%, hsl(${hue2}, 50%, 22%) 55%, hsl(${(hue + 120) % 360}, 40%, 18%) 100%)`,
-        }}
-      />
+      {image ? (
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          unoptimized
+        />
+      ) : (
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(125deg, hsl(${hue}, 58%, 38%) 0%, hsl(${hue2}, 50%, 22%) 55%, hsl(${(hue + 120) % 360}, 40%, 18%) 100%)`,
+          }}
+        />
+      )}
       <div
         className="absolute inset-0 opacity-[0.55]"
         style={{
@@ -207,8 +221,8 @@ type ProjectCardProps = {
 
 function ProjectCard({ project, displayIndex, entered, transitionDelayMs }: ProjectCardProps) {
   const primary = primaryLink(project);
-  const kind = linkKind(primary);
-  const badge = categoryBadge(kind);
+  const badge = categoryBadge(project.kind);
+  const ctaLabel = project.kind === "certificate" ? "View certificate" : "View project";
 
   return (
     <article
@@ -217,7 +231,12 @@ function ProjectCard({ project, displayIndex, entered, transitionDelayMs }: Proj
       }`}
       style={{ transitionDelay: `${transitionDelayMs}ms` }}
     >
-      <ProjectCardThumbnail title={project.title} primaryUrl={primary} displayIndex={displayIndex} />
+      <ProjectCardThumbnail
+        title={project.title}
+        primaryUrl={primary}
+        displayIndex={displayIndex}
+        image={project.image}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
@@ -241,7 +260,9 @@ function ProjectCard({ project, displayIndex, entered, transitionDelayMs }: Proj
           className="mt-1.5 block font-sans text-sm text-neutral-500"
           dateTime={project.date}
         >
-          Last updated · {project.date}
+          {project.kind === "certificate" && project.issuer
+            ? `${project.issuer} · ${project.date}`
+            : `Last updated · ${project.date}`}
         </time>
 
         <p className="mt-3 line-clamp-2 flex-1 font-sans text-sm leading-relaxed text-neutral-600 sm:line-clamp-3">
@@ -262,7 +283,7 @@ function ProjectCard({ project, displayIndex, entered, transitionDelayMs }: Proj
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 font-sans text-xs font-semibold text-white shadow-sm transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-2"
               >
-                View project
+                {ctaLabel}
                 <ExternalLinkIcon className="h-3.5 w-3.5 opacity-80" />
               </a>
             )}
@@ -308,6 +329,7 @@ const ProjectsPage = () => {
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.subtext.toLowerCase().includes(q) ||
+        (p.issuer?.toLowerCase().includes(q) ?? false) ||
         p.date.toLowerCase().includes(q),
     );
   }, [sortedProjects, searchQuery]);
@@ -394,14 +416,14 @@ const ProjectsPage = () => {
                 >
                   {searchQuery.trim()
                     ? `${filteredProjects.length} matches`
-                    : `${PROJECTS.length} projects`}
+                    : `${PROJECTS.length} projects & certificates`}
                 </span>
               </div>
               <h1 className="font-[var(--font-soria)] text-[clamp(2rem,5vw,3.5rem)] leading-[1.08] tracking-tight text-neutral-900">
-                Projects
+                Projects and Certificates
               </h1>
               <p className="mt-4 max-w-lg text-sm leading-relaxed text-neutral-600 md:text-base md:leading-relaxed">
-                Repositories, tools, and experiments — sorted with newest first.
+                Projects, certificates, and experiments — sorted with newest first.
               </p>
             </div>
             <button
@@ -410,13 +432,13 @@ const ProjectsPage = () => {
               className="group inline-flex shrink-0 items-center justify-center gap-2.5 self-start rounded-2xl border border-neutral-200 bg-neutral-50 px-5 py-3 text-sm font-medium text-neutral-800 shadow-sm transition duration-300 hover:border-neutral-300 hover:bg-white hover:text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white lg:self-auto"
             >
               <ArrowLeftIcon className="text-neutral-500 transition group-hover:-translate-x-0.5 group-hover:text-neutral-800" />
-              Back to Projects
+              Back
             </button>
           </div>
 
           <div className="mt-8 md:mt-10">
             <label htmlFor="project-search" className="sr-only">
-              Search projects
+              Search projects and certificates
             </label>
             <div className="relative w-full max-w-md">
               <input
@@ -424,7 +446,7 @@ const ProjectsPage = () => {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search projects…"
+                placeholder="Search projects and certificates…"
                 autoComplete="off"
                 className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3 pl-11 pr-12 font-sans text-sm text-neutral-900 shadow-sm outline-none transition placeholder:text-neutral-400 focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-200"
               />
@@ -454,10 +476,10 @@ const ProjectsPage = () => {
             <div className="h-px flex-1 bg-gradient-to-r from-neutral-300 via-neutral-200 to-transparent" />
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 md:gap-7 xl:grid-cols-3 xl:gap-6 2xl:grid-cols-4 2xl:gap-6">
+          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 md:gap-7">
             {filteredProjects.length === 0 ? (
               <p className="col-span-full py-12 text-center font-sans text-sm text-neutral-500">
-                No projects match &ldquo;{searchQuery.trim()}&rdquo;.
+                No projects or certificates match &ldquo;{searchQuery.trim()}&rdquo;.
               </p>
             ) : (
               paginatedProjects.map((project, index) => {
@@ -478,7 +500,7 @@ const ProjectsPage = () => {
           {totalPages > 1 ? (
             <nav
               className="mt-10 flex flex-col items-stretch justify-between gap-4 border-t border-neutral-200 pt-8 sm:flex-row sm:items-center"
-              aria-label={`Project pagination, page ${page} of ${totalPages}`}
+              aria-label={`Projects and certificates pagination, page ${page} of ${totalPages}`}
             >
               <button
                 type="button"
