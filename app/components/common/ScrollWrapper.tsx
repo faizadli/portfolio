@@ -38,7 +38,7 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[] })
       const ratio = maxST > 0 ? THREE.MathUtils.clamp(data.el.scrollTop / maxST, 0, 1) : 0;
       data.scroll.current = ratio;
       data.offset = ratio;
-      useScrollStore.getState().requestSnapCameraToScroll(28);
+      useScrollStore.getState().requestSnapCameraToScroll(8);
       window.setTimeout(() => {
         if (cancelled) return;
         setActivePortal("projects");
@@ -77,27 +77,18 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[] })
     const d = data.range(0.85, 0.18);
 
     if (!isActive) {
-      if (snapThisFrame) {
-        camera.rotation.x = -0.5 * Math.PI * a;
-        camera.position.y = -37 * b;
-        camera.position.z = 5 + 10 * d;
-        camera.position.x = 0;
-      } else {
-        camera.rotation.x = THREE.MathUtils.damp(camera.rotation.x, -0.5 * Math.PI * a, 5, delta);
-        camera.position.y = THREE.MathUtils.damp(camera.position.y, -37 * b, 7, delta);
-        camera.position.z = THREE.MathUtils.damp(camera.position.z, 5 + 10 * d, 7, delta);
-      }
+      // Snap frames only fix drei `offset` / `scroll.current` vs DOM — keep camera on damp + lerp
+      // so exit matches “buka side project lalu X” (no long instant snap segment).
+      camera.rotation.x = THREE.MathUtils.damp(camera.rotation.x, -0.5 * Math.PI * a, 5, delta);
+      camera.position.y = THREE.MathUtils.damp(camera.position.y, -37 * b, 7, delta);
+      camera.position.z = THREE.MathUtils.damp(camera.position.z, 5 + 10 * d, 7, delta);
 
       setScrollProgress(data.range(0, 1));
     }
 
     if (!isMobile && !isActive) {
       const yawTarget = -(state.pointer.x * Math.PI) / 90;
-      if (snapThisFrame) {
-        camera.rotation.y = yawTarget;
-      } else {
-        camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, yawTarget, 0.05);
-      }
+      camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, yawTarget, 0.05);
     }
   }, -1);
 

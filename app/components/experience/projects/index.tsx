@@ -2,6 +2,7 @@ import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef } from "react";
+import type { MutableRefObject } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore, useScrollStore } from "@stores";
@@ -9,10 +10,14 @@ import { Wanderer } from "../../models/Wanderer";
 import ProjectsCarousel from "./ProjectsCarousel";
 import { TouchPanControls } from "./TouchPanControls";
 
+type ScrollWithTarget = ReturnType<typeof useScroll> & {
+  scroll: MutableRefObject<number>;
+};
+
 const Projects = () => {
   const { camera } = useThree();
   const isActive = usePortalStore((state) => state.activePortalId === "projects");
-  const data = useScroll();
+  const data = useScroll() as ScrollWithTarget;
   const wasPortalActiveRef = useRef(false);
 
   useEffect(() => {
@@ -38,7 +43,15 @@ const Projects = () => {
     if (maxScrollTop <= 0) return;
     data.el.scrollTop = maxScrollTop;
     data.el.scrollTo?.({ top: maxScrollTop, behavior: "instant" });
-    useScrollStore.getState().requestSnapCameraToScroll(40);
+    const ratio = THREE.MathUtils.clamp(
+      maxScrollTop > 0 ? data.el.scrollTop / maxScrollTop : 0,
+      0,
+      1,
+    );
+    data.scroll.current = ratio;
+    data.offset = ratio;
+    // Short belt: keep drei target aligned with DOM; camera stays on damp (same as direct exit).
+    useScrollStore.getState().requestSnapCameraToScroll(8);
   }, [isActive, data.el]);
 
   useFrame((state, delta) => {
